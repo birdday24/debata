@@ -1,0 +1,265 @@
+/* ==========================================
+   1. PROMĚNNÉ & ZÁKLAD
+   ========================================== */
+:root {
+    --bg-dark: #07090f;
+    --bg-panel: rgba(15, 23, 42, 0.7);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    
+    --neon-blue: #0ea5e9;
+    --neon-red: #ef4444;
+    --neon-purple: #a855f7;
+    
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg-dark) 80%);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, h2, button {
+    font-family: 'Orbitron', sans-serif;
+}
+
+.hidden { display: none !important; }
+.screen { height: 100vh; display: flex; flex-direction: column; }
+
+/* Skleněný efekt */
+.glass-panel {
+    background: var(--bg-panel);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+}
+
+/* ==========================================
+   2. LOBBY OBRAZOVKA
+   ========================================== */
+#lobby-screen {
+    justify-content: center;
+    align-items: center;
+}
+
+.glow-box {
+    background: rgba(10, 15, 30, 0.6);
+    padding: 50px;
+    border-radius: 20px;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.1), inset 0 0 20px rgba(14, 165, 233, 0.05);
+    text-align: center;
+    width: 90%;
+    max-width: 450px;
+    backdrop-filter: blur(10px);
+}
+
+.neon-title {
+    font-size: 32px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.subtitle { color: var(--text-muted); margin-bottom: 30px; font-size: 14px; }
+
+.input-group { margin-bottom: 20px; }
+input {
+    width: 100%;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: 0.3s;
+}
+input:focus {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+}
+
+.btn-neon {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    color: var(--neon-blue);
+    border: 2px solid var(--neon-blue);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px var(--neon-blue);
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.2) inset, 0 0 10px rgba(14, 165, 233, 0.2);
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+
+.btn-neon:hover {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+/* ==========================================
+   3. ARÉNA (HLAVIČKA)
+   ========================================== */
+.arena-header {
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+.room-info { display: flex; flex-direction: column; position: relative; padding-left: 20px; }
+.pulse-dot {
+    position: absolute; left: 0; top: 8px; width: 10px; height: 10px;
+    background: var(--neon-red); border-radius: 50%;
+    box-shadow: 0 0 10px var(--neon-red);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(0.95); opacity: 1; }
+}
+
+.room-info h2 { font-size: 18px; letter-spacing: 1px; color: var(--text-muted); }
+.highlight { color: #fff; text-shadow: 0 0 8px #fff; }
+.user-info { font-size: 12px; color: var(--neon-blue); margin-top: 5px; }
+
+/* TLAČÍTKO SOUDCE */
+.btn-judge {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--neon-red);
+    border: 1px solid var(--neon-red);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 900;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    text-shadow: 0 0 5px var(--neon-red);
+}
+.btn-judge:hover {
+    background: var(--neon-red);
+    color: #fff;
+    box-shadow: 0 0 30px var(--neon-red);
+}
+
+/* ==========================================
+   4. CHAT A ZPRÁVY
+   ========================================== */
+.chat-area {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.3); border-radius: 3px; }
+
+.msg-wrapper { display: flex; flex-direction: column; max-width: 80%; animation: slideIn 0.3s ease-out; }
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.msg-sender { font-size: 11px; margin-bottom: 5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.msg-bubble { padding: 14px 20px; border-radius: 12px; font-size: 15px; line-height: 1.5; }
+
+/* Moje Zprávy */
+.msg-wrapper.me { align-self: flex-end; }
+.msg-wrapper.me .msg-sender { text-align: right; color: var(--neon-blue); }
+.msg-wrapper.me .msg-bubble {
+    background: linear-gradient(135deg, rgba(14,165,233,0.8), rgba(37,99,235,0.8));
+    color: white;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 5px 15px rgba(14, 165, 233, 0.2);
+}
+
+/* Oponentovy zprávy */
+.msg-wrapper.opponent { align-self: flex-start; }
+.msg-wrapper.opponent .msg-bubble {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    border-bottom-left-radius: 2px;
+}
+
+/* Systémové info */
+.msg-wrapper.system { align-self: center; max-width: 100%; opacity: 0.6; }
+.msg-wrapper.system .msg-bubble { background: transparent; font-size: 12px; font-style: italic; text-align: center; }
+
+/* ROZSUDEK AI SOUDCE */
+.msg-wrapper.judge {
+    align-self: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px 0;
+}
+.msg-wrapper.judge .msg-sender {
+    color: var(--neon-purple);
+    font-size: 14px;
+    font-weight: 900;
+    text-align: center;
+    text-shadow: 0 0 10px var(--neon-purple);
+    font-family: 'Orbitron', sans-serif;
+}
+.msg-wrapper.judge .msg-bubble {
+    background: rgba(20, 10, 30, 0.9);
+    border: 2px solid var(--neon-purple);
+    color: #fff;
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.3), inset 0 0 20px rgba(168, 85, 247, 0.1);
+    border-radius: 16px;
+    text-align: center;
+    font-size: 16px;
+    padding: 25px;
+}
+.msg-wrapper.judge strong { color: var(--neon-red); font-size: 18px; letter-spacing: 2px; font-family: 'Orbitron', sans-serif; }
+
+/* ==========================================
+   5. VSTUPNÍ POLE TEXTU
+   ========================================== */
+.input-area {
+    padding: 20px 30px;
+    display: flex;
+    gap: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.input-area input {
+    margin-bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-send {
+    padding: 0 25px;
+    background: var(--neon-blue);
+    color: #000;
+    border-radius: 8px;
+    font-size: 20px;
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+}
+.btn-send:hover { background: #fff; box-shadow: 0 0 25px #fff; }

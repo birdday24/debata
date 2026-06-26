@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Debatní Aréna ⚔️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+
+    <div id="lobby-screen" class="screen glass-container">
+        <div class="glow-box">
+            <h1 class="neon-title">DEBATNÍ ARÉNA</h1>
+            <p class="subtitle">Vstup do ringu a obhaj svůj názor.</p>
+            
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Tvoje přezdívka (např. Alfa)" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="text" id="room-code" placeholder="Kód ringu (např. PIZZA)" autocomplete="off">
+            </div>
+            
+            <button class="btn-neon" onclick="enterArena()">VSTOUPIT DO ARÉNY</button>
+        </div>
+    </div>
+
+    <div id="arena-screen" class="screen hidden">
+        
+        <header class="arena-header glass-panel">
+            <div class="room-info">
+                <span class="pulse-dot"></span>
+                <h2>RING: <span id="display-room" class="highlight"></span></h2>
+                <div class="user-info">Bojovník: <span id="display-user"></span></div>
+            </div>
+            <button class="btn-judge" onclick="callJudge()">⚖️ ZAVOLAT SOUDCE</button>
+        </header>
+
+        <main class="chat-area" id="chat-box">
+            <div class="msg-wrapper system">
+                <div class="msg-bubble">Systém: Čeká se na argumenty... Začněte debatu.</div>
+            </div>
+        </main>
+
+        <footer class="input-area glass-panel">
+            <input type="text" id="message-input" placeholder="Zasaď slovní úder..." autocomplete="off">
+            <button class="btn-send" onclick="sendMessage()">➤</button>
+        </footer>
+    </div>
+
+    <script>
+        const socket = io();
+        let currentUser = "";
+        let currentRoom = "";
+
+        // Odeslání Enterem
+        document.getElementById('room-code').addEventListener('keypress', (e) => { if (e.key === 'Enter') enterArena(); });
+        document.getElementById('message-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        function enterArena() {
+            const name = document.getElementById('username').value.trim();
+            const room = document.getElementById('room-code').value.trim().toUpperCase();
+            
+            if (name && room) {
+                currentUser = name;
+                currentRoom = room;
+                
+                // Připojení do místnosti na serveru
+                socket.emit('join', { user: currentUser, room: currentRoom });
+                
+                // Přepnutí obrazovek
+                document.getElementById('lobby-screen').classList.add('hidden');
+                document.getElementById('arena-screen').classList.remove('hidden');
+                document.getElementById('display-room').innerText = currentRoom;
+                document.getElementById('display-user').innerText = currentUser;
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            if (text) {
+                socket.emit('send_message', { room: currentRoom, user: currentUser, text: text });
+                input.value = "";
+            }
+        }
+
+        function callJudge() {
+            socket.emit('call_judge', { room: currentRoom });
+            // Menší cooldown ochrana proti spamu tlačítka
+            const btn = document.querySelector('.btn-judge');
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            setTimeout(() => { btn.disabled = false; btn.style.opacity = '1'; }, 10000);
+        }
+
+        // Přijímání zpráv a formátování designu
+        socket.on('receive_message', (data) => {
+            const chatBox = document.getElementById('chat-box');
+            const msgWrapper = document.createElement('div');
+            msgWrapper.classList.add('msg-wrapper');
+
+            if (data.type === 'system') {
+                msgWrapper.classList.add('system');
+                msgWrapper.innerHTML = `<div class="msg-bubble">${data.text}</div>`;
+            } 
+            else if (data.type === 'judge') {
+                // Design pro rozsudek AI
+                msgWrapper.classList.add('judge');
+                msgWrapper.innerHTML = `
+                    <div class="msg-sender">${data.user}</div>
+                    <div class="msg-bubble">
+                        <strong>ROZSUDEK:</strong><br><br>${data.text.replace(/\n/g, '<br>')}
+                    </div>
+                `;
+            } 
+            else {
+                // Běžní uživatelé
+                const isMe = data.user === currentUser;
+                msgWrapper.classList.add(isMe ? 'me' : 'opponent');
+                msgWrapper.innerHTML = `
+                    <div class="msg-sender">${data.user}</div>
+                    <div class="msg-bubble">${data.text}</div>
+                `;
+            }
+
+            chatBox.appendChild(msgWrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+</body>
+</html>
